@@ -33,9 +33,9 @@ function drawBubbles() {
                 ctx.fill();
                 ctx.closePath();
 
-                BUBBLES[i] = line + ";" + bubble + ";" + (x) + "," + (y) + ";1";
-                i++;
+                BUBBLES[i] = line + ";" + bubble + ";" + x + "," + y + ";0";
                 console.log(BUBBLES[i]);
+                i ++;
             }
         }
     }
