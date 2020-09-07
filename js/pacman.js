@@ -1,54 +1,91 @@
-let PACMAN_DIRECTION = 1;
-let PACMAN_DIRECTION_TRY = -1;
-let PACMAN_DIRECTION_TRY_TIMER = -1;
-let PACMAN_DIRECTION_TRY_CANCEL = 1000;
-let PACMAN_POSITION_X = 276;
-let PACMAN_POSITION_Y = 416;
-let PACMAN_POSITION_STEP = 2;
-let PACMAN_MOUTH_STATE = 3;
-let PACMAN_MOUTH_STATE_MAX = 6;
-let PACMAN_SIZE = 16;
-let PACMAN_MOVING = false;
-let PACMAN_MOVING_TIMER = -1;
-let PACMAN_MOVING_SPEED = 25;
-let PACMAN_CANVAS_CONTEXT = null;
-let PACMAN_EAT_GAP = 10;
+var PACMAN_DIRECTION = 3;
+var PACMAN_DIRECTION_TRY = -1;
+var PACMAN_DIRECTION_TRY_TIMER = null;
+var PACMAN_DIRECTION_TRY_CANCEL = 1000;
+var PACMAN_POSITION_X = 276;
+var PACMAN_POSITION_Y = 416;
+var PACMAN_POSITION_STEP = 2;
+var PACMAN_MOUTH_STATE = 3;
+var PACMAN_MOUTH_STATE_MAX = 6;
+var PACMAN_SIZE = 16;
+var PACMAN_MOVING = false;
+var PACMAN_MOVING_TIMER = -1;
+var PACMAN_MOVING_SPEED = 20;
+var PACMAN_CANVAS_CONTEXT = null;
+var PACMAN_EAT_GAP = 10;
+var PACMAN_GHOST_GAP = 20;
+var PACMAN_KILLING_TIMER = -1;
+var PACMAN_KILLING_SPEED = 100;
+var PACMAN_DEAD = false;
+var PACMAN_LOCK = false;
 
 function initPacman() {
-    let canvas = document.getElementById('canvas-pacman');
+    var canvas = document.getElementById('canvas-pacman');
     canvas.setAttribute('width', '550');
     canvas.setAttribute('height', '550');
     if (canvas.getContext) {
         PACMAN_CANVAS_CONTEXT = canvas.getContext('2d');
     }
 }
+function resetPacman() {
+    stopPacman();
 
+    PACMAN_DIRECTION = 3;
+    PACMAN_DIRECTION_TRY = -1;
+    PACMAN_DIRECTION_TRY_TIMER = null;
+    PACMAN_POSITION_X = 276;
+    PACMAN_POSITION_Y = 416;
+    PACMAN_MOUTH_STATE = 3;
+    PACMAN_MOVING = false;
+    PACMAN_MOVING_TIMER = -1;
+    PACMAN_KILLING_TIMER = -1;
+    PACMAN_DEAD = false;
+    PACMAN_SUPER = false;
+}
 function getPacmanCanvasContext() {
     return PACMAN_CANVAS_CONTEXT;
 }
 
 function stopPacman() {
     if (PACMAN_MOVING_TIMER != -1) {
-        console.log("MOVE PACMAN > STOP : " + PACMAN_MOVING_TIMER);
+        clearInterval(PACMAN_MOVING_TIMER);
+        PACMAN_MOVING_TIMER = -1;
+        PACMAN_MOVING = false;
+    }
+    if (PACMAN_KILLING_TIMER != -1) {
+        clearInterval(PACMAN_KILLING_TIMER);
+        PACMAN_KILLING_TIMER = -1;
+    }
+}
+
+function pausePacman() {
+    if (PACMAN_DIRECTION_TRY_TIMER != null) {
+        PACMAN_DIRECTION_TRY_TIMER.pause();
+    }
+
+    if ( PACMAN_MOVING_TIMER != -1 ) {
         clearInterval(PACMAN_MOVING_TIMER);
         PACMAN_MOVING_TIMER = -1;
         PACMAN_MOVING = false;
     }
 }
-
-function tryMovePacmanCancel() {
-    if (PACMAN_DIRECTION_TRY_TIMER != -1) {
-        console.log("TRY MOVE PACMAN > CANCEL : " + PACMAN_DIRECTION_TRY_TIMER);
-        clearTimeout(PACMAN_DIRECTION_TRY_TIMER);
-        PACMAN_DIRECTION_TRY = -1;
-        PACMAN_DIRECTION_TRY_TIMER = -1;
+function resumePacman() {
+    if (PACMAN_DIRECTION_TRY_TIMER != null) {
+        PACMAN_DIRECTION_TRY_TIMER.resume();
     }
+    movePacman();
 }
 
+function tryMovePacmanCancel() {
+    if (PACMAN_DIRECTION_TRY_TIMER != null) {
+        PACMAN_DIRECTION_TRY_TIMER.cancel();
+        PACMAN_DIRECTION_TRY = -1;
+        PACMAN_DIRECTION_TRY_TIMER = null;
+    }
+}
 function tryMovePacman(direction) {
     PACMAN_DIRECTION_TRY = direction;
-    PACMAN_DIRECTION_TRY_TIMER = setTimeout('tryMovePacmanCancel()', PACMAN_DIRECTION_TRY_CANCEL);
-    console.log("TRY MOVE PACMAN > NEW : " + PACMAN_DIRECTION_TRY_TIMER);
+    PACMAN_DIRECTION_TRY_TIMER = new Timer('tryMovePacmanCancel()', PACMAN_DIRECTION_TRY_CANCEL);
 }
 
 function movePacman(direction) {
@@ -56,10 +93,9 @@ function movePacman(direction) {
     if (PACMAN_MOVING === false) {
         PACMAN_MOVING = true;
         PACMAN_MOVING_TIMER = setInterval('movePacman()', PACMAN_MOVING_SPEED);
-        console.log("MOVE PACMAN > NEW : " + PACMAN_MOVING_TIMER);
     }
 
-    let directionTry = direction;
+    var directionTry = direction;
 
     if (!directionTry && PACMAN_DIRECTION_TRY != -1) {
         directionTry = PACMAN_DIRECTION_TRY;
@@ -85,25 +121,25 @@ function movePacman(direction) {
             erasePacman();
 
             if (PACMAN_MOUTH_STATE < PACMAN_MOUTH_STATE_MAX) {
-                PACMAN_MOUTH_STATE++;
+                PACMAN_MOUTH_STATE ++;
             } else {
                 PACMAN_MOUTH_STATE = 0;
             }
 
-            if (PACMAN_DIRECTION === 1) {
+            if ( PACMAN_DIRECTION === 1 ) {
                 PACMAN_POSITION_X += PACMAN_POSITION_STEP;
-            } else if (PACMAN_DIRECTION === 2) {
+            } else if ( PACMAN_DIRECTION === 2 ) {
                 PACMAN_POSITION_Y += PACMAN_POSITION_STEP;
-            } else if (PACMAN_DIRECTION === 3) {
+            } else if ( PACMAN_DIRECTION === 3 ) {
                 PACMAN_POSITION_X -= PACMAN_POSITION_STEP;
-            } else if (PACMAN_DIRECTION === 4) {
+            } else if ( PACMAN_DIRECTION === 4 ) {
                 PACMAN_POSITION_Y -= PACMAN_POSITION_STEP;
             }
 
-            if (PACMAN_POSITION_X === 2 && PACMAN_POSITION_Y === 258) {
+            if ( PACMAN_POSITION_X === 2 && PACMAN_POSITION_Y === 258 ) {
                 PACMAN_POSITION_X = 548;
                 PACMAN_POSITION_Y = 258;
-            } else if (PACMAN_POSITION_X === 548 && PACMAN_POSITION_Y === 258) {
+            } else if ( PACMAN_POSITION_X === 548 && PACMAN_POSITION_Y === 258 ) {
                 PACMAN_POSITION_X = 2;
                 PACMAN_POSITION_Y = 258;
             }
@@ -111,6 +147,7 @@ function movePacman(direction) {
             drawPacman();
 
             testBubblesPacman();
+            testGhostsPacman();
         } else {
             stopPacman();
         }
@@ -121,27 +158,27 @@ function movePacman(direction) {
 
 function canMovePacman(direction) {
 
-    let positionX = PACMAN_POSITION_X;
-    let positionY = PACMAN_POSITION_Y;
+    var positionX = PACMAN_POSITION_X;
+    var positionY = PACMAN_POSITION_Y;
 
-    if (direction === 1) {
+    if ( direction === 1 ) {
         positionX += PACMAN_POSITION_STEP;
-    } else if (direction === 2) {
+    } else if ( direction === 2 ) {
         positionY += PACMAN_POSITION_STEP;
-    } else if (direction === 3) {
+    } else if ( direction === 3 ) {
         positionX -= PACMAN_POSITION_STEP;
-    } else if (direction === 4) {
+    } else if ( direction === 4 ) {
         positionY -= PACMAN_POSITION_STEP;
     }
 
-    for (let i = 0, imax = PATHS.length; i < imax; i++) {
+    for (var i = 0, imax = PATHS.length; i < imax; i ++) {
 
-        let p = PATHS[i];
+        var p = PATHS[i];
 
-        let startX = p.split("-")[0].split(",")[0];
-        let startY = p.split("-")[0].split(",")[1];
-        let endX = p.split("-")[1].split(",")[0];
-        let endY = p.split("-")[1].split(",")[1];
+        var startX = p.split("-")[0].split(",")[0];
+        var startY = p.split("-")[0].split(",")[1];
+        var endX = p.split("-")[1].split(",")[0];
+        var endY = p.split("-")[1].split(",")[1];
 
         if (positionX >= startX && positionX <= endX && positionY >= startY && positionY <= endY) {
             return true;
@@ -153,15 +190,15 @@ function canMovePacman(direction) {
 
 function drawPacman() {
 
-    let ctx = getPacmanCanvasContext();
+    var ctx = getPacmanCanvasContext();
 
     ctx.fillStyle = "#fff200";
     ctx.beginPath();
 
-    let startAngle = 0;
-    let endAngle = 2 * Math.PI;
-    let lineToX = PACMAN_POSITION_X;
-    let lineToY = PACMAN_POSITION_Y;
+    var startAngle = 0;
+    var endAngle = 2 * Math.PI;
+    var lineToX = PACMAN_POSITION_X;
+    var lineToY = PACMAN_POSITION_Y;
     if (PACMAN_DIRECTION === 1) {
         startAngle = (0.35 - (PACMAN_MOUTH_STATE * 0.05)) * Math.PI;
         endAngle = (1.65 + (PACMAN_MOUTH_STATE * 0.05)) * Math.PI;
@@ -187,7 +224,7 @@ function drawPacman() {
 
 function erasePacman() {
 
-    let ctx = getPacmanCanvasContext();
+    var ctx = getPacmanCanvasContext();
 
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
@@ -200,24 +237,66 @@ function erasePacman() {
     ctx.restore();
 }
 
+function killPacman() {
+    PACMAN_LOCK = true;
+    PACMAN_DEAD = true;
+    stopPacman();
+    stopGhosts();
+    stopBlinkSuperBubbles();
+    PACMAN_KILLING_TIMER = setInterval('killingPacman()', PACMAN_KILLING_SPEED);
+}
+function killingPacman() {
+    if (PACMAN_MOUTH_STATE > -12) {
+        erasePacman();
+        PACMAN_MOUTH_STATE --;
+        drawPacman();
+    } else {
+        clearInterval(PACMAN_KILLING_TIMER);
+        PACMAN_KILLING_TIMER = -1;
+        erasePacman();
+        PACMAN_LOCK = false;
+    }
+}
+
+function testGhostsPacman() {
+    testGhostPacman('blinky');
+    testGhostPacman('pinky');
+    testGhostPacman('inky');
+    testGhostPacman('clyde');
+
+}
+function testGhostPacman(ghost) {
+    eval('var positionX = GHOST_' + ghost.toUpperCase() + '_POSITION_X');
+    eval('var positionY = GHOST_' + ghost.toUpperCase() + '_POSITION_Y');
+    eval('var state = GHOST_' + ghost.toUpperCase() + '_STATE');
+
+    if (positionX <= PACMAN_POSITION_X + PACMAN_GHOST_GAP && positionX >= PACMAN_POSITION_X - PACMAN_GHOST_GAP && positionY <= PACMAN_POSITION_Y + PACMAN_GHOST_GAP && positionY >= PACMAN_POSITION_Y - PACMAN_GHOST_GAP ) {
+        if (state === 0) {
+            killPacman();
+        } else if (state === 1) {
+            startEatGhost(ghost);
+        }
+    }
+}
+
 function testBubblesPacman() {
+    for (var i = 0, imax = BUBBLES.length; i < imax; i ++) {
+        var b = BUBBLES[i];
 
-    for (let i = 0, imax = BUBBLES.length; i < imax; i++) {
-        let b = BUBBLES[i];
-
-        let line = b.split(";")[0];
-        let bubble = b.split(";")[1];
-        let positionX = parseInt(b.split(";")[2].split(",")[0]);
-        let positionY = parseInt(b.split(";")[2].split(",")[1]);
-        let eat = b.split(";")[3];
-
-        //console.log("PACMAN EAT BUBBLE > TEST : " + positionX + "," + positionY + " / " + PACMAN_POSITION_X + "," + PACMAN_POSITION_Y);
+        var line = b.split(";")[0];
+        var bubble = b.split(";")[1];
+        var positionX = parseInt(b.split(";")[2].split(",")[0]);
+        var positionY = parseInt(b.split(";")[2].split(",")[1]);
+        var type = b.split(";")[3];
+        var eat = b.split(";")[4];
 
         if (eat === "0") {
-            if (positionX <= PACMAN_POSITION_X + PACMAN_EAT_GAP && positionX >= PACMAN_POSITION_X - PACMAN_EAT_GAP && positionY <= PACMAN_POSITION_Y + PACMAN_EAT_GAP && positionY >= PACMAN_POSITION_Y - PACMAN_EAT_GAP) {
-                eraseBubble(positionX, positionY);
+            if (positionX <= PACMAN_POSITION_X + PACMAN_EAT_GAP && positionX >= PACMAN_POSITION_X - PACMAN_EAT_GAP && positionY <= PACMAN_POSITION_Y + PACMAN_EAT_GAP && positionY >= PACMAN_POSITION_Y - PACMAN_EAT_GAP ) {
+                eraseBubble(type, positionX, positionY);
                 BUBBLES[i] = b.substr(0, b.length - 1) + "1";
-                //console.log("PACMAN EAT BUBBLE : " + BUBBLES[i]);
+                if (type === "s") {
+                    affraidGhosts();
+                }
                 return;
             }
         }
