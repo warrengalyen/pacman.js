@@ -160,6 +160,8 @@ function canMovePacman(direction) {
     var positionX = PACMAN_POSITION_X;
     var positionY = PACMAN_POSITION_Y;
 
+    if (positionX === 276 && positionY === 204 && direction === 2) return false;
+
     if ( direction === 1 ) {
         positionX += PACMAN_POSITION_STEP;
     } else if ( direction === 2 ) {
@@ -172,8 +174,8 @@ function canMovePacman(direction) {
 
     for (var i = 0, imax = PATHS.length; i < imax; i ++) {
 
-        var p = PATHS[i];
 
+        var p = PATHS[i];
         var startX = p.split("-")[0].split(",")[0];
         var startY = p.split("-")[0].split(",")[1];
         var endX = p.split("-")[1].split(",")[0];
