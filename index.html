@@ -32,7 +32,43 @@
             $.mobile.loading().hide();
 
             initHome();
-            // initGame();
+
+            $("#home").bind("tap", function(e) {
+                e.preventDefault();
+                simulateKeydown(13);
+            });
+            $("#control-up").bind("tap", function(e) {
+                e.preventDefault();
+                simulateKeydown(38);
+                simulateKeyup(13);
+            });
+            $("#control-down").bind("tap", function(e) {
+                e.preventDefault();
+                simulateKeydown(40);
+                simulateKeyup(13);
+            });
+            $("#control-left").bind("tap", function(e) {
+                e.preventDefault();
+                simulateKeydown(37);
+                simulateKeyup(13);
+            });
+            $("#control-right").bind("tap", function(e) {
+                e.preventDefault();
+                simulateKeydown(39);
+                simulateKeyup(13);
+            });
+
+
+            function simulateKeyup(code) {
+                var e = jQuery.Event("keyup");
+                e.keyCode = code;
+                jQuery('body').trigger(e);
+            }
+            function simulateKeydown(code) {
+                var e = jQuery.Event("keydown");
+                e.keyCode = code;
+                jQuery('body').trigger(e);
+            }
 
             $("body").keyup(function (e) {
                 KEYDOWN = false;
@@ -106,7 +142,7 @@
         <canvas id="canvas-presentation-inky"></canvas><div id="presentation-character-inky">- bashful</div><div id="presentation-name-inky">"inky"</div>
         <canvas id="canvas-presentation-clyde"></canvas><div id="presentation-character-clyde">- pokey</div><div id="presentation-name-clyde">"clyde"</div>
     </div>
-    <canvas id="trailer">
+    <canvas id="trailer"></canvas>
 
     </canvas>
 </div>
@@ -126,6 +162,10 @@
         <canvas id="canvas-ghost-pinky"></canvas>
         <canvas id="canvas-ghost-inky"></canvas>
         <canvas id="canvas-ghost-clyde"></canvas>
+        <div id="control-up"></div>
+        <div id="control-down"></div>
+        <div id="control-left"></div>
+        <div id="control-right"></div>
     </div>
     <canvas id="canvas-lives"></canvas>
     <canvas id="canvas-level-fruits"></canvas>
