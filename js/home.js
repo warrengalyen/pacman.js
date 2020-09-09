@@ -50,8 +50,14 @@ var GHOST_CLYDE_TRAILER_STATE = 0;
 function initHome() {
     HOME = true;
 
+    GAMEOVER = false;
+    LOCK = false;
+    PACMAN_DEAD = false;
+
     $("#panel").hide();
     $("#home").show();
+
+    $('#help').fadeOut("slow");
 
     var ctx = null;
     var canvas = document.getElementById('canvas-home-title-pacman');
