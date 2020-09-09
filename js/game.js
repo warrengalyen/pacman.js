@@ -219,25 +219,28 @@ function stopTimes() {
 }
 
 function pauseGame() {
-    PAUSE = true;
+    if (!PAUSE) {
+        PAUSE = true;
 
-    message("pause");
+        message("pause");
 
-    pauseTimes();
-    pausePacman();
-    pauseGhosts();
-    stopBlinkSuperBubbles();
-
+        pauseTimes();
+        pausePacman();
+        pauseGhosts();
+        stopBlinkSuperBubbles();
+    }
 }
 function resumeGame() {
-    PAUSE = false;
+    if (PAUSE) {
+        PAUSE = false;
 
-    clearMessage();
+        clearMessage();
 
-    resumeTimes();
-    resumePacman();
-    resumeGhosts();
-    blinkSuperBubbles();
+        resumeTimes();
+        resumePacman();
+        resumeGhosts();
+        blinkSuperBubbles();
+    }
 }
 
 function lives(l) {
