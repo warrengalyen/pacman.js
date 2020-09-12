@@ -80,26 +80,26 @@
 
             initHome();
 
-            $("#home").bind("tap", function (e) {
+            $("#home").on("mousedown touchstart", function(e) {
                 e.preventDefault();
                 simulateKeydown(13);
             });
-            $("#control-up, #control-up-second").bind("tap", function (e) {
+            $("#control-up, #control-up-second, #control-up-big").on("mousedown touchstart", function(e) {
                 e.preventDefault();
                 simulateKeydown(38);
                 simulateKeyup(13);
             });
-            $("#control-down, #control-down-second").bind("tap", function (e) {
+            $("#control-down, #control-down-second, #control-down-big").on("mousedown touchstart", function(e) {
                 e.preventDefault();
                 simulateKeydown(40);
                 simulateKeyup(13);
             });
-            $("#control-left").bind("tap", function (e) {
+            $("#control-left, #control-left-big").on("mousedown touchstart", function(e) {
                 e.preventDefault();
                 simulateKeydown(37);
                 simulateKeyup(13);
             });
-            $("#control-right").bind("tap", function (e) {
+            $("#control-right, #control-right-big").on("mousedown touchstart", function(e) {
                 e.preventDefault();
                 simulateKeydown(39);
                 simulateKeyup(13);
@@ -221,6 +221,10 @@
         <canvas id="canvas-ghost-pinky"></canvas>
         <canvas id="canvas-ghost-inky"></canvas>
         <canvas id="canvas-ghost-clyde"></canvas>
+        <div id="control-up-big"></div>
+        <div id="control-down-big"></div>
+        <div id="control-left-big"></div>
+        <div id="control-right-big"></div>
     </div>
     <div id="control">
         <div id="control-up"></div>
