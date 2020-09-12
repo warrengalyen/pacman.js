@@ -207,11 +207,32 @@ h3 {
     font-style: normal;
 }
 
+.sound {
+    position: absolute;
+}
+.sound img {
+    height: 28px;
+}
+#home .sound {
+    bottom: 0px;
+    right: 5px;
+}
+#panel .sound {
+    top: 77px;
+    right: 5px;
+}
+
+.github {
+    position: absolute;
+    bottom: 0px;
+    left: 5px;
+}
+
 .help-button {
     position: absolute;
     text-align: center;
-    bottom: 0px;
-    right: 5px;
+    bottom: 8px;
+    right: 55px;
     margin: auto;
     font-size: 14px;
     font-weight: bold;
@@ -266,6 +287,10 @@ h3 {
     text-align: left;
 }
 
+#sound {
+    position: absolute;
+}
+
 .ui-mobile {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -284,7 +309,7 @@ h3 {
 }
 
 @media screen and (max-width:1024px), screen and (min-device-width : 768px) and (max-device-width : 1024px) {
-    #home .help-button, #panel .help-button {
+    #home .help-button, #panel .help-button, #home .github, #sound, .sound {
         display: none;
     }
     #panel, #home {
@@ -302,7 +327,7 @@ h3 {
     #control {
         display: inline;
     }
-    #home .help-button, #panel .help-button {
+    #home .help-button, #panel .help-button, #home .github, #sound, .sound {
         display: none;
     }
     h1, #canvas-panel-title-pacman {
@@ -316,7 +341,7 @@ h3 {
     #control {
         display: inline;
     }
-    h1, #canvas-panel-title-pacman, #control-up-second, #control-down-second, #home .help-button, #panel .help-button {
+    h1, #canvas-panel-title-pacman, #control-up-second, #control-down-second, #home .help-button, #panel .help-button, #home .github, #sound, .sound {
         display: none;
     }
     #score, #highscore {
