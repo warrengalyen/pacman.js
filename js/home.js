@@ -56,6 +56,7 @@ function initHome() {
 
     $("#panel").hide();
     $("#home").show();
+    $("#home h3 em").append( " - " + new Date().getFullYear() );
 
     $('#help').fadeOut("slow");
 
@@ -292,11 +293,11 @@ function nextSequenceTrailer() {
     }
 }
 
-function getGhostsTrailerCanevasContext() {
+function getGhostsTrailerCanvasContext() {
     return PACMAN_TRAILER_CANVAS_CONTEXT;
 }
 function drawGhostsTrailer() {
-    var ctx = getGhostsTrailerCanevasContext();
+    var ctx = getGhostsTrailerCanvasContext();
 
     if (GHOST_BLINKY_TRAILER_STATE === 1) {
         ctx.fillStyle = GHOST_AFRAID_COLOR;
@@ -328,7 +329,7 @@ function drawGhostsTrailer() {
 }
 function eraseGhostsTrailer(ghost) {
 
-    var ctx = getGhostsTrailerCanevasContext();
+    var ctx = getGhostsTrailerCanvasContext();
 
     ctx.clearRect(GHOST_BLINKY_TRAILER_POSITION_X - 17, GHOST_BLINKY_TRAILER_POSITION_Y - 17, 34, 34);
     ctx.clearRect(GHOST_PINKY_TRAILER_POSITION_X - 17, GHOST_BLINKY_TRAILER_POSITION_Y - 17, 34, 34);

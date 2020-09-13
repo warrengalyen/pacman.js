@@ -1,12 +1,12 @@
- // ----------------------------------------------------------------------------
- // Buzz, a Javascript HTML5 Audio library
- // v1.1.10 - Built 2015-04-20 13:05
- // Licensed under the MIT license.
- // http://buzz.jaysalvat.com/
- // ----------------------------------------------------------------------------
- // Copyright (C) 2010-2015 Jay Salvat
- // http://jaysalvat.com/
- // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// Buzz, a Javascript HTML5 Audio library
+// v1.2.0 - Built 2016-05-22 15:16
+// Licensed under the MIT license.
+// http://buzz.jaysalvat.com/
+// ----------------------------------------------------------------------------
+// Copyright (C) 2010-2016 Jay Salvat
+// http://jaysalvat.com/
+// ----------------------------------------------------------------------------
 
 (function(context, factory) {
     "use strict";
@@ -23,6 +23,7 @@
     var buzz = {
         defaults: {
             autoplay: false,
+            crossOrigin: null,
             duration: 5e3,
             formats: [],
             loop: false,
@@ -261,20 +262,20 @@
                     return null;
                 }
                 switch (this.getErrorCode()) {
-                  case 1:
-                    return "MEDIA_ERR_ABORTED";
+                    case 1:
+                        return "MEDIA_ERR_ABORTED";
 
-                  case 2:
-                    return "MEDIA_ERR_NETWORK";
+                    case 2:
+                        return "MEDIA_ERR_NETWORK";
 
-                  case 3:
-                    return "MEDIA_ERR_DECODE";
+                    case 3:
+                        return "MEDIA_ERR_DECODE";
 
-                  case 4:
-                    return "MEDIA_ERR_SRC_NOT_SUPPORTED";
+                    case 4:
+                        return "MEDIA_ERR_SRC_NOT_SUPPORTED";
 
-                  default:
-                    return null;
+                    default:
+                        return null;
                 }
             };
             this.getStateCode = function() {
@@ -288,23 +289,23 @@
                     return null;
                 }
                 switch (this.getStateCode()) {
-                  case 0:
-                    return "HAVE_NOTHING";
+                    case 0:
+                        return "HAVE_NOTHING";
 
-                  case 1:
-                    return "HAVE_METADATA";
+                    case 1:
+                        return "HAVE_METADATA";
 
-                  case 2:
-                    return "HAVE_CURRENT_DATA";
+                    case 2:
+                        return "HAVE_CURRENT_DATA";
 
-                  case 3:
-                    return "HAVE_FUTURE_DATA";
+                    case 3:
+                        return "HAVE_FUTURE_DATA";
 
-                  case 4:
-                    return "HAVE_ENOUGH_DATA";
+                    case 4:
+                        return "HAVE_ENOUGH_DATA";
 
-                  default:
-                    return null;
+                    default:
+                        return null;
                 }
             };
             this.getNetworkStateCode = function() {
@@ -318,20 +319,20 @@
                     return null;
                 }
                 switch (this.getNetworkStateCode()) {
-                  case 0:
-                    return "NETWORK_EMPTY";
+                    case 0:
+                        return "NETWORK_EMPTY";
 
-                  case 1:
-                    return "NETWORK_IDLE";
+                    case 1:
+                        return "NETWORK_IDLE";
 
-                  case 2:
-                    return "NETWORK_LOADING";
+                    case 2:
+                        return "NETWORK_LOADING";
 
-                  case 3:
-                    return "NETWORK_NO_SOURCE";
+                    case 3:
+                        return "NETWORK_NO_SOURCE";
 
-                  default:
-                    return null;
+                    default:
+                        return null;
                 }
             };
             this.set = function(key, value) {
@@ -427,10 +428,11 @@
                 } else {
                     duration = duration || buzz.defaults.duration;
                 }
-                var from = this.volume, delay = duration / Math.abs(from - to), self = this;
+                var from = this.volume, delay = duration / Math.abs(from - to), self = this, fadeToTimeout;
                 this.play();
                 function doFade() {
-                    setTimeout(function() {
+                    clearTimeout(fadeToTimeout);
+                    fadeToTimeout = setTimeout(function() {
                         if (from < to && self.volume < to) {
                             self.setVolume(self.volume += 1);
                             doFade();
@@ -516,6 +518,9 @@
                     }
                 }
                 this.sound = doc.createElement("audio");
+                if (options.crossOrigin !== null) {
+                    this.sound.crossOrigin = options.crossOrigin;
+                }
                 if (options.webAudioApi) {
                     var audioCtx = buzz.getAudioContext();
                     if (audioCtx) {

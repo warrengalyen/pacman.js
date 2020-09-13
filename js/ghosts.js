@@ -126,7 +126,7 @@ function resetGhosts() {
     GHOST_CLYDE_AFRAID_TIMER = null;
     GHOST_CLYDE_AFRAID_STATE = 0;
 }
-function getGhostCanevasContext(ghost) {
+function getGhostCanvasContext(ghost) {
     return eval('GHOST_' + ghost.toUpperCase() + '_CANVAS_CONTEXT');
 }
 
@@ -137,7 +137,8 @@ function drawGhosts() {
     drawGhost("clyde");
 }
 function drawGhost(ghost) {
-    var ctx = getGhostCanevasContext(ghost);
+
+    var ctx = getGhostCanvasContext(ghost);
 
     if (eval('GHOST_' + ghost.toUpperCase() + '_STATE === 0')) {
         eval('ctx.fillStyle = GHOST_' + ghost.toUpperCase() + '_COLOR');
@@ -207,21 +208,24 @@ function testStateGhosts() {
 }
 
 function startEatGhost(ghost) {
-    playEatGhostSound();
 
-    LOCK = true;
+    if ( !LOCK ) {
+        playEatGhostSound();
 
-    if ( eval('GHOST_' + ghost.toUpperCase() + '_AFRAID_TIMER !== null') ) {
-        eval('GHOST_' + ghost.toUpperCase() + '_AFRAID_TIMER.cancel()');
-        eval('GHOST_' + ghost.toUpperCase() + '_AFRAID_TIMER = null');
+        LOCK = true;
+
+        if ( eval('GHOST_' + ghost.toUpperCase() + '_AFRAID_TIMER !== null') ) {
+            eval('GHOST_' + ghost.toUpperCase() + '_AFRAID_TIMER.cancel()');
+            eval('GHOST_' + ghost.toUpperCase() + '_AFRAID_TIMER = null');
+        }
+
+        score(SCORE_GHOST_COMBO, ghost);
+
+        pauseGhosts();
+        pausePacman();
+
+        setTimeout('eatGhost(\''+ ghost + '\')', 600);
     }
-
-    score(SCORE_GHOST_COMBO, ghost);
-
-    pauseGhosts();
-    pausePacman();
-
-    setTimeout('eatGhost(\''+ ghost + '\')', 600);
 }
 
 function eatGhost(ghost) {
@@ -315,7 +319,9 @@ function moveGhost(ghost) {
             drawGhost(ghost);
 
             if (eval('GHOST_' + ghost.toUpperCase() + '_BODY_STATE === 3') && eval('GHOST_' + ghost.toUpperCase() + '_STATE != -1')) {
-                testGhostPacman(ghost);
+                if ( !PACMAN_MOVING ) {
+                    testGhostPacman(ghost);
+                }
                 testGhostTunnel(ghost);
             }
         } else {
@@ -463,17 +469,9 @@ function reverseDirection(direction) {
 
 function eraseGhost(ghost) {
 
-    var ctx = getGhostCanevasContext(ghost);
+    var ctx = getGhostCanvasContext(ghost);
 
-    //ctx.save();
-    //ctx.globalCompositeOperation = "destination-out";
-
-    //ctx.beginPath();
     eval('ctx.clearRect(GHOST_' + ghost.toUpperCase() + '_POSITION_X - 17, GHOST_' + ghost.toUpperCase() + '_POSITION_Y - 17, 34, 34)');
-    //ctx.fill();
-
-    //ctx.closePath();
-    //ctx.restore();
 }
 function eraseGhosts() {
 
