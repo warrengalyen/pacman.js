@@ -267,8 +267,8 @@ function killingPacman() {
         clearInterval(PACMAN_KILLING_TIMER);
         PACMAN_KILLING_TIMER = -1;
         erasePacman();
-        if (LIFES > 0) {
-            lifes(-1);
+        if (LIVES > 0) {
+            lives(-1);
             setTimeout('retry()', (PACMAN_RETRY_SPEED));
         } else {
             gameover();
@@ -328,7 +328,7 @@ function testBubblesPacman() {
                     setSuperBubbleOnXY( testX, testY, "1" );
                     score( SCORE_SUPER_BUBBLE );
                     playEatPillSound();
-                    affraidGhosts();
+                    afraidGhosts();
                 } else {
                     score( SCORE_BUBBLE );
                     playEatingSound();
